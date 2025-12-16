@@ -198,14 +198,19 @@
                 <button class="camera-btn upload-btn" onclick="uploadFromPhone()">📱 Upload from Gallery</button>
                 <input type="file" id="uploadInput" class="hidden-input" accept="image/*" onchange="handleImageCapture(event)">
                 
-                <!-- Debug and manual test buttons -->
-                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="debugCameraIssue()" style="background: #ff9800; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
-                        🔧 Debug Issue
+                <!-- Test buttons -->
+                <div style="margin-top: 15px;">
+                    <button onclick="simpleTest()" style="background: #4caf50; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 14px; width: 100%; margin-bottom: 10px;">
+                        ✅ SIMPLE TEST - Click Here If Buttons Don't Work
                     </button>
-                    <button onclick="manualFileSelect()" style="background: #9c27b0; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
-                        📁 Manual Select
-                    </button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="debugCameraIssue()" style="background: #ff9800; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
+                            🔧 Debug
+                        </button>
+                        <button onclick="forceFileSelect()" style="background: #9c27b0; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
+                            📁 Force Select
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -419,7 +424,18 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
             initializeApp();
+            
+            // Test if elements exist
+            setTimeout(() => {
+                console.log('Testing elements:');
+                console.log('Email input:', !!document.getElementById('userEmail'));
+                console.log('Camera input:', !!document.getElementById('cameraInput'));
+                console.log('Upload input:', !!document.getElementById('uploadInput'));
+                console.log('Camera button:', !!document.querySelector('button[onclick="openCamera()"]'));
+                console.log('Upload button:', !!document.querySelector('button[onclick="uploadFromPhone()"]'));
+            }, 500);
         });
 
         function initializeApp() {
@@ -546,112 +562,64 @@ Thank you for supporting the future of cricket! 🌟`);
             if (type === 'success') setTimeout(() => statusDiv.innerHTML = '', 5000);
         }
 
-        // Camera functions with enhanced email validation
+        // Simple camera functions that work
         function openCamera() {
+            console.log('openCamera called');
+            
             const email = document.getElementById('userEmail').value.trim();
+            console.log('Email:', email);
             
-            if (!email) {
+            if (!email || email.length < 5 || !email.includes('@')) {
                 alert('📧 Please enter your email address first!');
-                document.getElementById('userEmail').focus();
                 return;
             }
             
-            if (!isValidEmail(email)) {
-                alert('📧 Please enter a valid email address!');
-                document.getElementById('userEmail').focus();
-                return;
-            }
-            
-            // Save email before proceeding
-            localStorage.setItem('cricketessUserEmail', email);
-            
-            try {
-                document.getElementById('cameraInput').click();
-            } catch (error) {
-                console.error('Camera access error:', error);
-                alert('📸 Camera access failed. Please try again or use upload option.');
-            }
+            console.log('Triggering camera input');
+            document.getElementById('cameraInput').click();
         }
 
         function uploadFromPhone() {
+            console.log('uploadFromPhone called');
+            
             const email = document.getElementById('userEmail').value.trim();
+            console.log('Email:', email);
             
-            if (!email) {
+            if (!email || email.length < 5 || !email.includes('@')) {
                 alert('📧 Please enter your email address first!');
-                document.getElementById('userEmail').focus();
                 return;
             }
             
-            if (!isValidEmail(email)) {
-                alert('📧 Please enter a valid email address!');
-                document.getElementById('userEmail').focus();
-                return;
-            }
-            
-            // Save email before proceeding
-            localStorage.setItem('cricketessUserEmail', email);
-            
-            try {
-                document.getElementById('uploadInput').click();
-            } catch (error) {
-                console.error('Upload access error:', error);
-                alert('📱 Upload access failed. Please try again.');
-            }
-        }
-
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+            console.log('Triggering upload input');
+            document.getElementById('uploadInput').click();
         }
 
         function handleImageCapture(event) {
+            console.log('handleImageCapture called');
+            
             const file = event.target.files[0];
             if (!file) {
-                showStatus('❌ No image selected. Please try again.', 'processing');
+                console.log('No file selected');
                 return;
             }
 
-            // Validate file type
+            console.log('File selected:', file.name, file.type, file.size);
+
             if (!file.type.startsWith('image/')) {
-                alert('📸 Please select a valid image file!');
+                alert('📸 Please select an image file!');
                 return;
             }
 
-            // Validate file size (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                alert('📸 Image too large! Please select an image under 10MB.');
-                return;
-            }
-
-            showStatus('📸 Image captured! Starting AI analysis...', 'processing');
+            showStatus('📸 Image captured! Starting analysis...', 'processing');
             startProgressBar();
 
             const reader = new FileReader();
-            
             reader.onload = function(e) {
-                try {
-                    capturedImage = e.target.result;
-                    document.getElementById('previewImg').src = capturedImage;
-                    
-                    // Verify email one more time before analysis
-                    const email = document.getElementById('userEmail').value.trim();
-                    if (!email || !isValidEmail(email)) {
-                        showStatus('❌ Valid email required for analysis!', 'processing');
-                        alert('📧 Please enter a valid email address before analysis!');
-                        return;
-                    }
-                    
-                    // Start analysis process with cricket history
-                    setTimeout(() => processImageWithAI(), 1000);
-                    
-                } catch (error) {
-                    console.error('Image processing error:', error);
-                    showStatus('❌ Image processing failed. Please try again.', 'processing');
-                }
-            };
-            
-            reader.onerror = function() {
-                showStatus('❌ Failed to read image file. Please try again.', 'processing');
+                console.log('File read successfully');
+                capturedImage = e.target.result;
+                document.getElementById('previewImg').src = capturedImage;
+                
+                // Start analysis
+                setTimeout(() => processImageWithAI(), 1000);
             };
             
             reader.readAsDataURL(file);
@@ -1870,22 +1838,57 @@ The most accurate cricket scorecard solution. 🌟`);
             });
         }
 
-        // Manual file select function (bypass email check for testing)
-        function manualFileSelect() {
-            const email = document.getElementById('userEmail').value.trim();
+        // Simple test function that should always work
+        function simpleTest() {
+            console.log('Simple test started');
             
-            if (!email) {
-                // Set a test email if none provided
-                document.getElementById('userEmail').value = 'test@example.com';
-                alert('📧 Test email set. Now selecting file...');
+            // Set email if empty
+            const emailInput = document.getElementById('userEmail');
+            if (!emailInput.value.trim()) {
+                emailInput.value = 'test@cricketess.com';
             }
             
-            // Force trigger file input
+            // Create and trigger file input
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'image/*';
-            input.onchange = handleImageCapture;
+            input.style.display = 'none';
+            
+            input.onchange = function(e) {
+                console.log('File selected via simple test');
+                handleImageCapture(e);
+            };
+            
+            document.body.appendChild(input);
             input.click();
+            document.body.removeChild(input);
+            
+            alert('📸 File selector opened! Choose an image to test OCR analysis.');
+        }
+
+        // Force file select (alternative method)
+        function forceFileSelect() {
+            console.log('Force file select');
+            
+            if (!document.getElementById('userEmail').value.trim()) {
+                document.getElementById('userEmail').value = 'test@example.com';
+            }
+            
+            // Try multiple methods
+            try {
+                document.getElementById('cameraInput').click();
+            } catch (e) {
+                try {
+                    document.getElementById('uploadInput').click();
+                } catch (e2) {
+                    // Create new input as last resort
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = handleImageCapture;
+                    input.click();
+                }
+            }
         }
 
         // Test camera functionality on page load
