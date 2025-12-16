@@ -2,1902 +2,504 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🏏 Cricketess Mobile - Final Version</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏏 Cricketess Mobile - Working Version</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1976d2, #e91e63); min-height: 100vh; padding: 10px; color: #333; }
-        .container { max-width: 100%; margin: 0 auto; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .header { background: linear-gradient(135deg, #e91e63, #1976d2); color: white; padding: 20px; text-align: center; position: relative; }
-        .header h1 { font-size: 20px; margin-bottom: 5px; }
-        .header p { opacity: 0.9; font-size: 12px; }
-        .download-counter { position: absolute; top: 10px; right: 15px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; font-size: 10px; }
-        .content { padding: 20px; }
-        .section { margin-bottom: 20px; padding: 15px; border-radius: 8px; }
-        
-        /* Registration Section */
-        .registration { background: linear-gradient(135deg, #ff6b6b, #4ecdc4); color: white; text-align: center; }
-        .registration h3 { margin-bottom: 10px; }
-        .reg-input { width: 100%; padding: 12px; border: none; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
-        .reg-btn { background: white; color: #ff6b6b; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .reg-btn:active { transform: scale(0.98); }
-        
-        /* Donation Section */
-        .donation { background: linear-gradient(135deg, #ffd700, #ff8c00); color: white; text-align: center; }
-        .donation h3 { margin-bottom: 10px; }
-        .donation-amounts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .amount-btn { background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .amount-btn.selected { background: white; color: #ff8c00; }
-        .custom-amount { width: 100%; padding: 10px; border: 2px solid white; border-radius: 8px; background: transparent; color: white; margin-bottom: 10px; }
-        .custom-amount::placeholder { color: rgba(255,255,255,0.7); }
-        .donate-btn { background: white; color: #ff8c00; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-        
-        /* Instructions */
-        .instructions { background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; }
-        .instructions h3 { color: #f57c00; margin-bottom: 10px; }
-        .instructions ol { margin-left: 20px; margin-bottom: 10px; }
-        .instructions li { font-size: 13px; margin-bottom: 5px; line-height: 1.4; }
-        
-        /* Email Options */
-        .email-options h3 { margin-bottom: 10px; color: #1976d2; }
-        .email-method { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 2px solid transparent; }
-        .email-method.selected { border-color: #e91e63; background: #fef7ff; }
-        .email-input { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 10px; }
-        .email-input:focus { outline: none; border-color: #e91e63; }
-        
-        /* Camera Section */
-        .camera-section { text-align: center; background: #f8f9fa; }
-        .camera-section h3 { color: #2e7d32; margin-bottom: 15px; }
-        .camera-btn { width: 100%; padding: 20px; background: #4caf50; color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 15px; }
-        .camera-btn:active { background: #45a049; transform: scale(0.98); }
-        .upload-btn { background: #2196F3; }
-        
-        /* Progress Bar */
-        .progress-container { background: #f0f0f0; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .progress-bar { height: 8px; background: linear-gradient(90deg, #4caf50, #2196F3); width: 0%; transition: width 0.3s ease; }
-        .progress-text { text-align: center; margin: 10px 0; font-size: 12px; color: #666; }
-        
-        /* Cricket History */
-        .cricket-history { background: #f0f8ff; border-left: 4px solid #2196F3; display: none; }
-        .cricket-history.show { display: block; }
-        .cricket-history h3 { color: #1976d2; margin-bottom: 10px; }
-        .history-item { margin-bottom: 10px; padding: 8px; background: white; border-radius: 5px; font-size: 12px; }
-        .history-year { font-weight: bold; color: #e91e63; }
-        
-        /* Highlight Videos */
-        .highlight-videos { background: #fff3e0; border-left: 4px solid #ff9800; display: none; }
-        .highlight-videos.show { display: block; }
-        .highlight-videos h3 { color: #f57c00; margin-bottom: 10px; }
-        .video-item { margin-bottom: 10px; padding: 10px; background: white; border-radius: 5px; cursor: pointer; }
-        .video-item:hover { background: #f5f5f5; }
-        .video-title { font-weight: bold; color: #e91e63; font-size: 12px; }
-        .video-desc { font-size: 11px; color: #666; margin-top: 3px; }
-        
-        /* Preview Section */
-        .preview-section { display: none; }
-        .preview-section.show { display: block; }
-        .preview-img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; border: 2px solid #e0e0e0; margin-bottom: 15px; }
-        .analysis-section { background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        
-        /* Buttons */
-        .send-btn { width: 100%; padding: 15px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .send-btn:active { background: #d81b60; transform: scale(0.98); }
-        .excel-btn { background: #217346; }
-        .whatsapp-btn { background: #25D366; }
-        
-        /* Status */
-        .status { padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; }
-        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .status.processing { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        .status.notification { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-        
-        /* Women's Cricket */
-        .women-cricket { background: #fef7ff; }
-        .women-cricket h3 { color: #e91e63; margin-bottom: 10px; font-size: 16px; }
-        .stars { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-        .star-chip { background: #e91e63; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
-        .star-chip:hover { background: #d81b60; transform: scale(1.05); }
-        .star-chip.clickable { border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        
-        /* Player Stats Popup */
-        .player-stats { display: none; margin-top: 15px; padding: 15px; background: white; border-radius: 10px; border: 2px solid #e91e63; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .player-stats.show { display: block; animation: slideDown 0.3s ease; }
-        .player-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; float: left; margin-right: 15px; border: 3px solid #e91e63; }
-        .player-info { overflow: hidden; }
-        .player-name { font-size: 16px; font-weight: bold; color: #e91e63; margin-bottom: 5px; }
-        .player-role { font-size: 12px; color: #666; margin-bottom: 10px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .stat-item { background: #f8f9fa; padding: 5px 8px; border-radius: 5px; text-align: center; }
-        .stat-label { font-size: 10px; color: #666; }
-        .stat-value { font-size: 12px; font-weight: bold; color: #e91e63; }
-        .close-stats { float: right; background: #e91e63; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #1976d2, #e91e63); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: #333; 
         }
-        
-        /* Share Section */
-        .share-section { background: #e8f5e8; border-left: 4px solid #4caf50; }
-        .share-section h3 { color: #2e7d32; margin-bottom: 10px; }
-        .share-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .share-btn { padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; }
-        .whatsapp-share { background: #25D366; }
-        .copy-link { background: #2196F3; }
-        .sms-share { background: #FF9800; }
-        .email-share { background: #9C27B0; }
-        .share-btn:active { transform: scale(0.98); }
-        
-        .url-box { background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .url-box:hover { background: #f0f0f0; }
-        .hidden-input { display: none; }
-        
-        @media (max-width: 480px) {
-            .container { margin: 0; border-radius: 0; min-height: 100vh; }
-            .content { padding: 15px; }
-            .header { padding: 15px; }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            padding: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #e91e63, #1976d2); 
+            color: white; 
+            border-radius: 10px; 
+        }
+        .section { 
+            margin-bottom: 25px; 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: #f8f9fa; 
+        }
+        .email-input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+        }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-bottom: 10px; 
+            transition: all 0.3s ease; 
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-camera { background: #4caf50; color: white; }
+        .btn-upload { background: #2196f3; color: white; }
+        .btn-excel { background: #ff9800; color: white; }
+        .preview-img { 
+            width: 100%; 
+            max-height: 300px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+        }
+        .status { 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+        }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        .hidden { display: none; }
+        .progress-bar { 
+            width: 100%; 
+            height: 20px; 
+            background: #f0f0f0; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            margin-bottom: 15px; 
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #4caf50, #2196f3); 
+            width: 0%; 
+            transition: width 0.3s ease; 
+        }
+        .ocr-text { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            font-family: monospace; 
+            font-size: 12px; 
+            margin-bottom: 15px; 
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏏 Cricketess Mobile - Final</h1>
-            <p>Cricket Scorecard OCR - Complete Professional Solution</p>
-            <div class="download-counter">📊 <span id="downloadCount">0</span> downloads</div>
+            <h1>🏏 Cricketess Mobile</h1>
+            <p>Cricket Scorecard OCR - Real Analysis & Excel Export</p>
         </div>
 
-        <div class="content">
+        <!-- Email Input -->
+        <div class="section">
+            <h3>📧 Email Address (Required)</h3>
+            <input type="email" id="emailInput" class="email-input" placeholder="your.email@example.com" required>
+        </div>
 
+        <!-- Camera/Upload Section -->
+        <div class="section">
+            <h3>📸 Upload Scorecard Image</h3>
+            <button class="btn btn-camera" onclick="takePhoto()">📸 Take Photo</button>
+            <button class="btn btn-upload" onclick="uploadImage()">📱 Upload from Gallery</button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFile(event)">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFile(event)">
+        </div>
 
-            <!-- Instructions -->
-            <div class="section instructions">
-                <h3>📋 How to Use Cricketess</h3>
-                <ol>
-                    <li><strong>Register</strong> for premium features (optional)</li>
-                    <li><strong>Choose delivery method</strong> for Excel files</li>
-                    <li><strong>Enter email address</strong> (auto-saved)</li>
-                    <li><strong>Take photo</strong> of cricket scorecard</li>
-                    <li><strong>Watch cricket history</strong> during AI analysis</li>
-                    <li><strong>Get professional Excel</strong> with 6 sheets</li>
-                    <li><strong>Share results</strong> with your team</li>
-                </ol>
-                <p><strong>⚡ COMPLETE SOLUTION:</strong> Real Excel files • Cricket education • Progress tracking • Premium videos</p>
+        <!-- Status Display -->
+        <div id="statusDiv"></div>
+
+        <!-- Progress Bar -->
+        <div id="progressSection" class="hidden">
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
             </div>
+            <p id="progressText" style="text-align: center; margin-bottom: 15px;">Starting OCR analysis...</p>
+        </div>
 
-            <!-- Email Method Selection -->
-            <div class="section email-options">
-                <h3>📧 Choose Excel Delivery Method</h3>
-                <div class="email-method" onclick="selectEmailMethod('gmail')">
-                    <input type="radio" name="emailMethod" value="gmail" id="gmail">
-                    <label for="gmail"><strong>📧 Gmail</strong> - Send via Gmail app with attachment</label>
-                </div>
-                <div class="email-method" onclick="selectEmailMethod('drive')">
-                    <input type="radio" name="emailMethod" value="drive" id="drive">
-                    <label for="drive"><strong>☁️ Google Drive</strong> - Upload & share link</label>
-                </div>
-                <div class="email-method" onclick="selectEmailMethod('download')">
-                    <input type="radio" name="emailMethod" value="download" id="download">
-                    <label for="download"><strong>💾 Direct Download</strong> - Download to phone</label>
-                </div>
-            </div>
+        <!-- Image Preview -->
+        <div id="previewSection" class="section hidden">
+            <h3>📷 Captured Image</h3>
+            <img id="previewImg" class="preview-img" alt="Scorecard Preview">
+        </div>
 
-            <!-- Email Input -->
-            <input type="email" id="userEmail" class="email-input" placeholder="your.email@example.com" required>
+        <!-- OCR Results -->
+        <div id="ocrSection" class="section hidden">
+            <h3>🔍 OCR Text Extracted</h3>
+            <div id="ocrText" class="ocr-text"></div>
+            <p><strong>Confidence:</strong> <span id="ocrConfidence">0%</span></p>
+        </div>
 
-            <!-- Photo Capture -->
-            <div class="section camera-section">
-                <h3>📸 Capture Scorecard</h3>
-                <button class="camera-btn" onclick="openCamera()">📸 Take Photo of Scorecard</button>
-                <input type="file" id="cameraInput" class="hidden-input" accept="image/*" capture="environment" onchange="handleImageCapture(event)">
-                
-                <div style="text-align: center; margin: 15px 0; color: #666; font-weight: bold;">OR</div>
-                
-                <button class="camera-btn upload-btn" onclick="uploadFromPhone()">📱 Upload from Gallery</button>
-                <input type="file" id="uploadInput" class="hidden-input" accept="image/*" onchange="handleImageCapture(event)">
-                
-                <!-- Test buttons -->
-                <div style="margin-top: 15px;">
-                    <button onclick="simpleTest()" style="background: #4caf50; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 14px; width: 100%; margin-bottom: 10px;">
-                        ✅ SIMPLE TEST - Click Here If Buttons Don't Work
-                    </button>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button onclick="debugCameraIssue()" style="background: #ff9800; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
-                            🔧 Debug
-                        </button>
-                        <button onclick="forceFileSelect()" style="background: #9c27b0; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 11px;">
-                            📁 Force Select
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-bar" id="progressBar"></div>
-                <div class="progress-text" id="progressText">Starting AI analysis...</div>
-            </div>
-
-            <!-- Cricket History (shown during analysis) -->
-            <div class="section cricket-history" id="cricketHistory">
-                <h3>🏏 Cricket History - While We Process</h3>
-                <div class="history-item">
-                    <span class="history-year">1877</span> - First Test match played between Australia and England at Melbourne Cricket Ground
-                </div>
-                <div class="history-item">
-                    <span class="history-year">1973</span> - First Women's World Cup held in England, won by England
-                </div>
-                <div class="history-item">
-                    <span class="history-year">2000</span> - South Africa Women's team played their first Test match
-                </div>
-                <div class="history-item">
-                    <span class="history-year">2017</span> - Women's Cricket World Cup final watched by 180 million viewers
-                </div>
-                <div class="history-item">
-                    <span class="history-year">2023</span> - Laura Wolvaardt becomes youngest SA captain at 24
-                </div>
-            </div>
-
-            <!-- Highlight Videos (for registered users) -->
-            <div class="section highlight-videos" id="highlightVideos">
-                <h3>🎬 Premium Cricket Highlights</h3>
-                <div class="video-item" onclick="playVideo('wolvaardt')">
-                    <div class="video-title">🏏 Laura Wolvaardt - Record Breaking Century</div>
-                    <div class="video-desc">Watch SA captain's masterclass against Australia Women</div>
-                </div>
-                <div class="video-item" onclick="playVideo('luus')">
-                    <div class="video-title">👑 Sune Luus - All-Round Excellence</div>
-                    <div class="video-desc">Former captain's best bowling and batting moments</div>
-                </div>
-                <div class="video-item" onclick="playVideo('ismail')">
-                    <div class="video-title">⚡ Shabnim Ismail - Fastest Deliveries</div>
-                    <div class="video-desc">World's fastest female bowler in action</div>
-                </div>
-                <div class="video-item" onclick="playVideo('kapp')">
-                    <div class="video-title">🎯 Marizanne Kapp - ICC Player Highlights</div>
-                    <div class="video-desc">ICC Player of the Year's greatest moments</div>
-                </div>
-            </div>
-
-            <!-- Status Display -->
-            <div id="statusDisplay"></div>
-
-            <!-- Preview Section -->
-            <div id="previewSection" class="section preview-section">
-                <h3>📷 Scorecard Analysis Complete</h3>
-                <img id="previewImg" class="preview-img" alt="Scorecard Preview">
-                
-                <div class="analysis-section">
-                    <h4>🤖 AI Analysis Results</h4>
-                    <p><strong>OCR Accuracy:</strong> 96.4% • <strong>Processing Time:</strong> 3.1s</p>
-                    <p><strong>Excel Sheets:</strong> 6 professional sheets • <strong>Data Quality:</strong> Cricket board ready</p>
-                </div>
-
-                <button class="send-btn excel-btn" onclick="generateAndSendExcel()">📊 Generate & Send Excel Report</button>
-                <button class="send-btn whatsapp-btn" onclick="shareToWhatsApp()">📱 Share Results via WhatsApp</button>
-            </div>
-
-            <!-- Women's Cricket Celebration -->
-            <div class="section women-cricket">
-                <h3>👩 Celebrating Women's Cricket - Youth Focus</h3>
-                <p><strong>FIRST IT'S FOR YOUTH</strong> - Inspiring the next generation with SA legends:</p>
-                <div class="stars">
-                    <span class="star-chip clickable" onclick="togglePlayerStats('wolvaardt')">🏏 Laura Wolvaardt</span>
-                    <span class="star-chip clickable" onclick="togglePlayerStats('luus')">👑 Sune Luus</span>
-                    <span class="star-chip" onclick="showRegisterPrompt()">⚡ Shabnim Ismail</span>
-                    <span class="star-chip" onclick="showRegisterPrompt()">🎯 Marizanne Kapp</span>
-                </div>
-                <p>Perfect for youth cricket development and club scorekeeping! 🏏✨</p>
-                <p style="font-size: 11px; color: #666; margin-top: 10px;">📊 Tap Laura Wolvaardt or Sune Luus for stats • Register to see all players</p>
-                
-                <!-- Laura Wolvaardt Stats -->
-                <div id="wolvaardt-stats" class="player-stats">
-                    <button class="close-stats" onclick="hidePlayerStats('wolvaardt')">×</button>
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNlOTFlNjMiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAyQzEzLjEgMiAxNCAyLjkgMTQgNEMxNCA1LjEgMTMuMSA2IDEyIDZDMTAuOSA2IDEwIDUuMSAxMCA0QzEwIDIuOSAxMC45IDIgMTIgMlpNMjEgOVYyMkgxOVYxNkgxM1YyMkgxMVY5QzExIDguNDUgMTEuNDUgOCAxMiA4SDE4QzE4LjU1IDggMTkgOC40NSAxOSA5WiIvPgo8L3N2Zz4KPC9zdmc+" class="player-photo" alt="Laura Wolvaardt">
-                    <div class="player-info">
-                        <div class="player-name">🏏 Laura Wolvaardt</div>
-                        <div class="player-role">SA Captain • Right-hand Batter • Occasional Right-arm Medium</div>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-label">ODI Runs</div>
-                                <div class="stat-value">3,247</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">ODI Average</div>
-                                <div class="stat-value">42.96</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">T20I Runs</div>
-                                <div class="stat-value">2,156</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">T20I Average</div>
-                                <div class="stat-value">28.75</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">Centuries</div>
-                                <div class="stat-value">8</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">Fifties</div>
-                                <div class="stat-value">24</div>
-                            </div>
-                        </div>
-                        <p style="font-size: 11px; color: #666; margin-top: 8px; clear: both;">
-                            🏆 Youngest SA captain at 24 • World record holder for most runs in Women's Cricket World Cup
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Sune Luus Stats -->
-                <div id="luus-stats" class="player-stats">
-                    <button class="close-stats" onclick="hidePlayerStats('luus')">×</button>
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZmQ3MDAiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik01IDEzLjE4djRMMTIgMjBsNy0yLjgydi00TDEyIDE2bC03LTIuODJaTTEyIDJMMSA3bDExIDVMMjMgN2wtMTEtNXoiLz4KPC9zdmc+Cjwvc3ZnPg==" class="player-photo" alt="Sune Luus">
-                    <div class="player-info">
-                        <div class="player-name">👑 Sune Luus</div>
-                        <div class="player-role">Former SA Captain • Right-hand Batter • Right-arm Off-spin</div>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-label">ODI Runs</div>
-                                <div class="stat-value">2,934</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">ODI Average</div>
-                                <div class="stat-value">36.67</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">ODI Wickets</div>
-                                <div class="stat-value">89</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">Bowling Avg</div>
-                                <div class="stat-value">24.12</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">T20I Runs</div>
-                                <div class="stat-value">1,567</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-label">T20I Wickets</div>
-                                <div class="stat-value">45</div>
-                            </div>
-                        </div>
-                        <p style="font-size: 11px; color: #666; margin-top: 8px; clear: both;">
-                            🏆 Former SA captain • All-rounder excellence • Led SA to World Cup finals
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Donation Section -->
-            <div class="section donation">
-                <h3>☕ Buy the Scorer a Drink</h3>
-                <p>Support cricket development & women's cricket!</p>
-                <div class="donation-amounts">
-                    <button class="amount-btn" onclick="selectAmount(10)">R10</button>
-                    <button class="amount-btn" onclick="selectAmount(35)">R35</button>
-                    <button class="amount-btn" onclick="selectAmount(50)">R50</button>
-                </div>
-                <input type="number" class="custom-amount" id="customAmount" placeholder="Custom amount (R)">
-                <button class="donate-btn" onclick="processDonation()">💝 Donate & Support Cricket</button>
-            </div>
-
-            <!-- Share App -->
-            <div class="section share-section">
-                <h3>📱 Share Cricketess Mobile</h3>
-                <p>Help cricket teams worldwide digitize their scorecards!</p>
-                
-                <div class="share-buttons">
-                    <button class="share-btn whatsapp-share" onclick="shareAppToWhatsApp()">📱 WhatsApp</button>
-                    <button class="share-btn copy-link" onclick="copyAppLink()">🔗 Copy Link</button>
-                    <button class="share-btn sms-share" onclick="shareViaSMS()">💬 SMS</button>
-                    <button class="share-btn email-share" onclick="shareViaEmail()">📧 Email</button>
-                </div>
-                
-                <div class="url-box" onclick="copyAppLink()">
-                    <span id="appUrl">https://elotechapp.github.io/cricketess-mobile</span>
-                    <span>📋</span>
-                </div>
-            </div>
-
-            <!-- Registration Section -->
-            <div class="section registration" id="registrationSection">
-                <h3>🎯 Register for Premium Features</h3>
-                <p>Get exclusive highlight videos and cricket history!</p>
-                <input type="text" class="reg-input" id="userName" placeholder="Your Name">
-                <input type="email" class="reg-input" id="regEmail" placeholder="Email Address">
-                <button class="reg-btn" onclick="registerUser()">🚀 Register & Unlock Features</button>
-            </div>
+        <!-- Excel Export -->
+        <div id="excelSection" class="section hidden">
+            <h3>📊 Export to Excel</h3>
+            <button class="btn btn-excel" onclick="exportToExcel()">📊 Generate & Download Excel Report</button>
         </div>
     </div>
 
     <script>
-        // Global variables
-        let capturedImage = null;
-        let selectedEmailMethod = 'gmail';
-        let extractedData = null;
-        let selectedDonationAmount = 0;
-        let isRegistered = false;
-        let downloadCount = 0;
+        let capturedImageData = null;
+        let ocrResult = null;
+        let extractedCricketData = null;
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing app...');
-            initializeApp();
+        // Take photo function
+        function takePhoto() {
+            if (!validateEmail()) return;
             
-            // Test if elements exist
-            setTimeout(() => {
-                console.log('Testing elements:');
-                console.log('Email input:', !!document.getElementById('userEmail'));
-                console.log('Camera input:', !!document.getElementById('cameraInput'));
-                console.log('Upload input:', !!document.getElementById('uploadInput'));
-                console.log('Camera button:', !!document.querySelector('button[onclick="openCamera()"]'));
-                console.log('Upload button:', !!document.querySelector('button[onclick="uploadFromPhone()"]'));
-            }, 500);
-        });
-
-        function initializeApp() {
-            selectEmailMethod('gmail');
-            document.getElementById('appUrl').textContent = window.location.href;
-            loadUserData();
-            updateDownloadCounter();
-            trackAppDownload();
-        }
-
-        function loadUserData() {
-            // Load saved email
-            const savedEmail = localStorage.getItem('cricketessUserEmail');
-            if (savedEmail) {
-                document.getElementById('userEmail').value = savedEmail;
-                document.getElementById('userEmail').placeholder = 'Email remembered: ' + savedEmail;
-            }
-
-            // Check registration status
-            const regStatus = localStorage.getItem('cricketessRegistered');
-            if (regStatus === 'true') {
-                isRegistered = true;
-                document.getElementById('registrationSection').style.display = 'none';
-            }
-
-            // Load download count
-            downloadCount = parseInt(localStorage.getItem('cricketessDownloads') || '0');
-        }
-
-        function updateDownloadCounter() {
-            document.getElementById('downloadCount').textContent = downloadCount;
-        }
-
-        function trackAppDownload() {
-            // Track app access
-            downloadCount++;
-            localStorage.setItem('cricketessDownloads', downloadCount.toString());
-            updateDownloadCounter();
-        }
-
-        // Registration functions
-        function registerUser() {
-            const name = document.getElementById('userName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-
-            if (!name || !email) {
-                alert('📝 Please enter your name and email to register!');
-                return;
-            }
-
-            // Save registration
-            localStorage.setItem('cricketessRegistered', 'true');
-            localStorage.setItem('cricketessUserName', name);
-            localStorage.setItem('cricketessUserEmail', email);
-            
-            // Update UI
-            isRegistered = true;
-            document.getElementById('registrationSection').style.display = 'none';
-            document.getElementById('userEmail').value = email;
-            
-            showStatus('🎉 Registration successful! Premium features unlocked.', 'success');
-            
-            // Show welcome message
-            setTimeout(() => {
-                alert(`🎯 Welcome ${name}!
-
-✅ Registration complete
-✅ Premium highlight videos unlocked
-✅ Cricket history during analysis
-✅ Email address saved
-
-You now have access to all premium features!`);
-            }, 1000);
-        }
-
-        // Donation functions
-        function selectAmount(amount) {
-            selectedDonationAmount = amount;
-            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
-            document.getElementById('customAmount').value = '';
-        }
-
-        function processDonation() {
-            const customAmount = document.getElementById('customAmount').value;
-            const amount = customAmount ? parseInt(customAmount) : selectedDonationAmount;
-
-            if (!amount || amount < 5) {
-                alert('💝 Please select or enter a donation amount (minimum R5)');
-                return;
-            }
-
-            // Simulate donation processing
-            showStatus(`💝 Processing donation of R${amount}...`, 'processing');
-            
-            setTimeout(() => {
-                showStatus(`🙏 Thank you for your R${amount} donation! Supporting cricket development.`, 'success');
-                
-                // Show donation confirmation
-                setTimeout(() => {
-                    alert(`☕ Donation Successful!
-
-💝 Amount: R${amount}
-🏏 Supporting: Cricket development & women's cricket
-🎯 Impact: Helping youth access cricket technology
-
-Thank you for supporting the future of cricket! 🌟`);
-                }, 1500);
-            }, 2000);
-        }
-
-        // Email method selection
-        function selectEmailMethod(method) {
-            selectedEmailMethod = method;
-            document.querySelectorAll('.email-method').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`#${method}`).parentElement.classList.add('selected');
-            document.querySelector(`#${method}`).checked = true;
-        }
-
-        // Status display
-        function showStatus(message, type = 'processing') {
-            const statusDiv = document.getElementById('statusDisplay');
-            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
-            if (type === 'success') setTimeout(() => statusDiv.innerHTML = '', 5000);
-        }
-
-        // Simple camera functions that work
-        function openCamera() {
-            console.log('openCamera called');
-            
-            const email = document.getElementById('userEmail').value.trim();
-            console.log('Email:', email);
-            
-            if (!email || email.length < 5 || !email.includes('@')) {
-                alert('📧 Please enter your email address first!');
-                return;
-            }
-            
-            console.log('Triggering camera input');
+            console.log('Taking photo...');
             document.getElementById('cameraInput').click();
         }
 
-        function uploadFromPhone() {
-            console.log('uploadFromPhone called');
+        // Upload image function
+        function uploadImage() {
+            if (!validateEmail()) return;
             
-            const email = document.getElementById('userEmail').value.trim();
-            console.log('Email:', email);
-            
-            if (!email || email.length < 5 || !email.includes('@')) {
-                alert('📧 Please enter your email address first!');
-                return;
-            }
-            
-            console.log('Triggering upload input');
-            document.getElementById('uploadInput').click();
+            console.log('Uploading image...');
+            document.getElementById('fileInput').click();
         }
 
-        function handleImageCapture(event) {
-            console.log('handleImageCapture called');
-            
-            const file = event.target.files[0];
-            if (!file) {
-                console.log('No file selected');
-                return;
+        // Validate email
+        function validateEmail() {
+            const email = document.getElementById('emailInput').value.trim();
+            if (!email || !email.includes('@')) {
+                showStatus('Please enter a valid email address first!', 'error');
+                return false;
             }
+            return true;
+        }
+
+        // Handle file selection
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
             console.log('File selected:', file.name, file.type, file.size);
 
             if (!file.type.startsWith('image/')) {
-                alert('📸 Please select an image file!');
+                showStatus('Please select an image file!', 'error');
                 return;
             }
 
-            showStatus('📸 Image captured! Starting analysis...', 'processing');
-            startProgressBar();
-
+            showStatus('Image selected! Processing...', 'processing');
+            
             const reader = new FileReader();
             reader.onload = function(e) {
-                console.log('File read successfully');
-                capturedImage = e.target.result;
-                document.getElementById('previewImg').src = capturedImage;
-                
-                // Start analysis
-                setTimeout(() => processImageWithAI(), 1000);
+                capturedImageData = e.target.result;
+                showPreview(capturedImageData);
+                startOCRAnalysis(capturedImageData);
             };
-            
             reader.readAsDataURL(file);
         }
 
-        function startProgressBar() {
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const cricketHistory = document.getElementById('cricketHistory');
-            const highlightVideos = document.getElementById('highlightVideos');
-
-            progressContainer.style.display = 'block';
-            cricketHistory.classList.add('show');
-            
-            if (isRegistered) {
-                highlightVideos.classList.add('show');
-            }
-
-            let progress = 0;
-            const progressSteps = [
-                { percent: 20, text: '🔍 Scanning scorecard image...' },
-                { percent: 40, text: '🤖 AI analyzing cricket data...' },
-                { percent: 60, text: '📊 Extracting player statistics...' },
-                { percent: 80, text: '🏏 Processing bowling figures...' },
-                { percent: 100, text: '✅ Analysis complete!' }
-            ];
-
-            let stepIndex = 0;
-            const progressInterval = setInterval(() => {
-                if (stepIndex < progressSteps.length) {
-                    const step = progressSteps[stepIndex];
-                    progressBar.style.width = step.percent + '%';
-                    progressText.textContent = step.text;
-                    stepIndex++;
-                } else {
-                    clearInterval(progressInterval);
-                    setTimeout(() => {
-                        progressContainer.style.display = 'none';
-                        cricketHistory.classList.remove('show');
-                        highlightVideos.classList.remove('show');
-                    }, 1000);
-                }
-            }, 800);
+        // Show image preview
+        function showPreview(imageData) {
+            document.getElementById('previewImg').src = imageData;
+            document.getElementById('previewSection').classList.remove('hidden');
         }
 
-        async function processImageWithAI() {
+        // Start OCR analysis
+        async function startOCRAnalysis(imageData) {
             try {
-                showStatus('🔍 Analyzing actual scorecard image with OCR...', 'processing');
+                showStatus('Starting OCR analysis...', 'processing');
+                showProgress(0, 'Initializing Tesseract OCR...');
                 
-                // Real OCR analysis of the uploaded image
-                const ocrResult = await performRealOCR(capturedImage);
-                
-                showStatus('📊 Extracting cricket data from OCR text...', 'processing');
-                
-                // Parse the OCR text to extract cricket data
-                extractedData = await parseCricketData(ocrResult);
-                
-                showStatus('✅ Real scorecard analysis complete!', 'success');
-                
-            } catch (error) {
-                console.error('OCR Analysis Error:', error);
-                showStatus('⚠️ OCR analysis failed. Using fallback analysis...', 'processing');
-                
-                // Fallback to basic analysis if OCR fails
-                extractedData = createFallbackAnalysis();
-            }
-        }
-
-        async function performRealOCR(imageData) {
-            try {
-                showStatus('🔍 Initializing Tesseract OCR engine...', 'processing');
-                
-                // Use Tesseract.js for real OCR analysis
-                const { data: { text, confidence } } = await Tesseract.recognize(
+                const result = await Tesseract.recognize(
                     imageData,
                     'eng',
                     {
                         logger: m => {
                             if (m.status === 'recognizing text') {
                                 const progress = Math.round(m.progress * 100);
-                                showStatus(`🤖 OCR Analysis: ${progress}% complete...`, 'processing');
+                                showProgress(progress, `OCR Analysis: ${progress}% complete`);
                             }
                         }
                     }
                 );
-                
-                showStatus('✅ OCR text extraction complete!', 'success');
-                
-                return {
-                    text: text,
-                    confidence: confidence,
-                    timestamp: new Date().toISOString()
-                };
+
+                ocrResult = result.data;
+                showOCRResults(ocrResult);
+                extractCricketData(ocrResult);
                 
             } catch (error) {
-                console.error('Tesseract OCR Error:', error);
-                showStatus('⚠️ OCR engine failed, using fallback analysis...', 'processing');
-                
-                // Fallback to basic image analysis
-                return await performBasicImageAnalysis(imageData);
+                console.error('OCR Error:', error);
+                showStatus('OCR analysis failed. Please try again.', 'error');
             }
         }
 
-        async function performBasicImageAnalysis(imageData) {
-            return new Promise((resolve, reject) => {
-                try {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const img = new Image();
-                    
-                    img.onload = function() {
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        ctx.drawImage(img, 0, 0);
-                        
-                        const imagePixelData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                        const analysisResult = analyzeImageForText(imagePixelData, canvas);
-                        
-                        resolve({
-                            text: analysisResult,
-                            confidence: 65,
-                            timestamp: new Date().toISOString(),
-                            method: 'Basic Image Analysis'
-                        });
-                    };
-                    
-                    img.onerror = () => reject(new Error('Failed to load image for analysis'));
-                    img.src = imageData;
-                    
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-
-        function analyzeImageForText(imageData, canvas) {
-            // Basic image analysis to detect text patterns
-            const data = imageData.data;
-            const width = imageData.width;
-            const height = imageData.height;
+        // Show progress
+        function showProgress(percent, text) {
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
             
-            let detectedText = '';
-            let textRegions = [];
-            
-            // Analyze image for text-like patterns
-            for (let y = 0; y < height; y += 10) {
-                for (let x = 0; x < width; x += 10) {
-                    const index = (y * width + x) * 4;
-                    const r = data[index];
-                    const g = data[index + 1];
-                    const b = data[index + 2];
-                    
-                    // Look for high contrast areas (likely text)
-                    const brightness = (r + g + b) / 3;
-                    if (brightness < 100 || brightness > 200) {
-                        textRegions.push({x, y, brightness});
-                    }
-                }
+            if (percent >= 100) {
+                setTimeout(() => {
+                    document.getElementById('progressSection').classList.add('hidden');
+                }, 2000);
             }
-            
-            // Simulate OCR text extraction based on image analysis
-            if (textRegions.length > 100) {
-                detectedText = generateOCRText(textRegions.length);
-            } else {
-                detectedText = 'Limited text detected in image';
-            }
-            
-            return detectedText;
         }
 
-        function generateOCRText(complexity) {
-            // Generate realistic OCR text based on image complexity
-            const templates = [
-                'CRICKET SCORECARD\nTeam A vs Team B\nDate: ' + new Date().toLocaleDateString(),
-                'MATCH SUMMARY\nBatting Team\nBowling Figures',
-                'PLAYER STATISTICS\nRuns Balls 4s 6s SR\nBowling Analysis'
-            ];
+        // Show OCR results
+        function showOCRResults(result) {
+            document.getElementById('ocrText').textContent = result.text || 'No text detected';
+            document.getElementById('ocrConfidence').textContent = (result.confidence || 0).toFixed(1) + '%';
+            document.getElementById('ocrSection').classList.remove('hidden');
             
-            return templates[Math.floor(Math.random() * templates.length)] + 
-                   '\nComplexity Score: ' + complexity;
+            showStatus(`OCR completed! Confidence: ${(result.confidence || 0).toFixed(1)}%`, 'success');
         }
 
-        async function parseCricketData(ocrResult) {
-            // Parse the actual OCR text to extract cricket data
-            const ocrText = ocrResult.text || '';
-            const confidence = ocrResult.confidence || 0;
-            const lines = ocrText.split('\n').filter(line => line.trim().length > 0);
+        // Extract cricket data from OCR text
+        function extractCricketData(ocrResult) {
+            const text = ocrResult.text || '';
+            const lines = text.split('\n').filter(line => line.trim().length > 0);
             
-            showStatus(`📊 Parsing cricket data from OCR (${confidence.toFixed(1)}% confidence)...`, 'processing');
+            console.log('Extracting cricket data from:', lines);
+            
+            // Basic cricket data extraction
             let teamA = 'Team A';
             let teamB = 'Team B';
             let venue = 'Cricket Ground';
             let date = new Date().toLocaleDateString();
             
-            // Look for team names in OCR text
+            // Look for team names
             for (const line of lines) {
-                if (line.includes('vs') || line.includes('V/S') || line.includes('v')) {
-                    const teams = line.split(/vs|V\/S|v/i);
+                if (line.toLowerCase().includes('vs') || line.toLowerCase().includes('v ')) {
+                    const teams = line.split(/vs|v /i);
                     if (teams.length >= 2) {
                         teamA = teams[0].trim();
                         teamB = teams[1].trim();
                     }
                 }
-                
-                // Look for venue information
-                if (line.toLowerCase().includes('ground') || line.toLowerCase().includes('stadium')) {
-                    venue = line.trim();
-                }
-                
-                // Look for date information
-                if (line.match(/\d{1,2}\/\d{1,2}\/\d{4}/) || line.match(/\d{1,2}-\d{1,2}-\d{4}/)) {
-                    date = line.trim();
-                }
             }
             
-            // Extract batting data from OCR text
-            const battingData = extractBattingData(lines);
-            const bowlingData = extractBowlingData(lines);
-            
-            return {
-                matchInfo: {
-                    teamA: teamA || 'Team A',
-                    teamB: teamB || 'Team B',
-                    date: date,
-                    venue: venue,
-                    competition: 'Cricket Match',
-                    result: 'Match Result from OCR',
-                    toss: 'Toss information extracted',
-                    umpires: 'Match Officials',
-                    matchReferee: 'Match Referee',
-                    weather: 'Weather conditions',
-                    attendance: 'Attendance figure'
-                },
-                teamABatting: battingData.length > 0 ? battingData : createDefaultBatting(teamA),
-                teamBBatting: createDefaultBatting(teamB),
-                bowling: bowlingData.length > 0 ? bowlingData : createDefaultBowling(),
-                extras: {
-                    byes: extractNumber(ocrText, 'byes') || 0,
-                    legByes: extractNumber(ocrText, 'leg') || 0,
-                    wides: extractNumber(ocrText, 'wide') || 0,
-                    noBalls: extractNumber(ocrText, 'no') || 0,
-                    penalties: 0,
-                    total: 0
-                },
-                fallOfWickets: extractFallOfWickets(lines),
-                partnerships: [],
-                powerplayScores: {
-                    teamA: 'Powerplay score A',
-                    teamB: 'Powerplay score B'
-                },
-                analysisAccuracy: {
-                    ocrConfidence: confidence,
-                    dataValidation: Math.min(confidence + 10, 95),
-                    crossVerification: Math.min(confidence + 5, 90),
-                    overallAccuracy: confidence,
-                    ocrMethod: ocrResult.method || 'Tesseract OCR',
-                    textLength: ocrText.length,
-                    linesDetected: lines.length
-                }
-            };
-        }
-
-        function extractBattingData(lines) {
-            const battingData = [];
-            let position = 1;
+            // Extract player data
+            const players = [];
+            const bowlers = [];
             
             for (const line of lines) {
-                // Look for batting statistics patterns
                 const numbers = line.match(/\d+/g);
-                if (numbers && numbers.length >= 3) {
-                    const playerName = line.replace(/\d+/g, '').trim();
-                    if (playerName.length > 2) {
-                        battingData.push({
-                            name: playerName,
-                            runs: parseInt(numbers[0]) || 0,
-                            balls: parseInt(numbers[1]) || 0,
-                            fours: parseInt(numbers[2]) || 0,
-                            sixes: parseInt(numbers[3]) || 0,
-                            strikeRate: numbers.length > 1 ? ((parseInt(numbers[0]) / parseInt(numbers[1])) * 100).toFixed(2) : 0,
-                            position: position++,
-                            dismissal: 'Dismissal method'
-                        });
-                    }
-                }
-            }
-            
-            return battingData;
-        }
-
-        function extractBowlingData(lines) {
-            const bowlingData = [];
-            
-            for (const line of lines) {
-                // Look for bowling statistics patterns
-                if (line.toLowerCase().includes('bowl') || line.match(/\d+\.\d+/)) {
-                    const numbers = line.match(/\d+\.?\d*/g);
-                    if (numbers && numbers.length >= 2) {
-                        const bowlerName = line.replace(/\d+\.?\d*/g, '').trim();
-                        if (bowlerName.length > 2) {
-                            bowlingData.push({
-                                bowler: bowlerName,
+                if (numbers && numbers.length >= 2) {
+                    const name = line.replace(/\d+/g, '').replace(/[^\w\s]/g, '').trim();
+                    if (name.length > 2) {
+                        if (line.toLowerCase().includes('bowl')) {
+                            bowlers.push({
+                                name: name,
                                 overs: parseFloat(numbers[0]) || 0,
-                                maidens: parseInt(numbers[1]) || 0,
-                                runs: parseInt(numbers[2]) || 0,
-                                wickets: parseInt(numbers[3]) || 0,
-                                economy: numbers.length > 2 ? (parseInt(numbers[2]) / parseFloat(numbers[0])).toFixed(2) : 0,
-                                dots: 0,
-                                wides: 0,
-                                noBalls: 0
+                                runs: parseInt(numbers[1]) || 0,
+                                wickets: parseInt(numbers[2]) || 0
+                            });
+                        } else {
+                            players.push({
+                                name: name,
+                                runs: parseInt(numbers[0]) || 0,
+                                balls: parseInt(numbers[1]) || 0,
+                                fours: parseInt(numbers[2]) || 0,
+                                sixes: parseInt(numbers[3]) || 0
                             });
                         }
                     }
                 }
             }
             
-            return bowlingData;
-        }
-
-        function extractNumber(text, keyword) {
-            const regex = new RegExp(keyword + '\\s*(\\d+)', 'i');
-            const match = text.match(regex);
-            return match ? parseInt(match[1]) : null;
-        }
-
-        function extractFallOfWickets(lines) {
-            const fallOfWickets = [];
-            
-            for (const line of lines) {
-                if (line.includes('-') && line.match(/\d+/)) {
-                    fallOfWickets.push(line.trim());
-                }
-            }
-            
-            return fallOfWickets.length > 0 ? fallOfWickets : ['Fall of wickets from OCR'];
-        }
-
-        function calculateOCRConfidence(ocrText) {
-            // Calculate confidence based on text quality
-            const textLength = ocrText.length;
-            const wordCount = ocrText.split(' ').length;
-            const numberCount = (ocrText.match(/\d/g) || []).length;
-            
-            let confidence = 60; // Base confidence
-            
-            if (textLength > 100) confidence += 10;
-            if (wordCount > 20) confidence += 10;
-            if (numberCount > 10) confidence += 15;
-            
-            return Math.min(confidence, 95);
-        }
-
-        function createDefaultBatting(teamName) {
-            return [
-                {name: 'Player 1', runs: 0, balls: 0, fours: 0, sixes: 0, strikeRate: 0, position: 1, dismissal: 'not out'},
-                {name: 'Player 2', runs: 0, balls: 0, fours: 0, sixes: 0, strikeRate: 0, position: 2, dismissal: 'not out'}
-            ];
-        }
-
-        function createDefaultBowling() {
-            return [
-                {bowler: 'Bowler 1', overs: 0, maidens: 0, runs: 0, wickets: 0, economy: 0, dots: 0, wides: 0, noBalls: 0},
-                {bowler: 'Bowler 2', overs: 0, maidens: 0, runs: 0, wickets: 0, economy: 0, dots: 0, wides: 0, noBalls: 0}
-            ];
-        }
-
-        function createFallbackAnalysis() {
-            return {
+            extractedCricketData = {
                 matchInfo: {
-                    teamA: 'Team A (from image)',
-                    teamB: 'Team B (from image)',
-                    date: new Date().toLocaleDateString(),
-                    venue: 'Cricket Ground (detected)',
-                    competition: 'Cricket Match',
-                    result: 'Result pending analysis',
-                    toss: 'Toss information not clear',
-                    umpires: 'Officials not detected',
-                    matchReferee: 'Referee not specified',
-                    weather: 'Weather not specified',
-                    attendance: 'Attendance not available'
+                    teamA: teamA,
+                    teamB: teamB,
+                    date: date,
+                    venue: venue,
+                    ocrConfidence: ocrResult.confidence || 0,
+                    textLength: text.length,
+                    linesDetected: lines.length
                 },
-                teamABatting: createDefaultBatting('Team A'),
-                teamBBatting: createDefaultBatting('Team B'),
-                bowling: createDefaultBowling(),
-                extras: { byes: 0, legByes: 0, wides: 0, noBalls: 0, penalties: 0, total: 0 },
-                fallOfWickets: ['OCR analysis incomplete'],
-                partnerships: [],
-                powerplayScores: { teamA: 'Not detected', teamB: 'Not detected' },
-                analysisAccuracy: {
-                    ocrConfidence: 65.0,
-                    dataValidation: 70.0,
-                    crossVerification: 68.0,
-                    overallAccuracy: 67.5
-                }
+                players: players.length > 0 ? players : [
+                    {name: 'Player 1', runs: 0, balls: 0, fours: 0, sixes: 0},
+                    {name: 'Player 2', runs: 0, balls: 0, fours: 0, sixes: 0}
+                ],
+                bowlers: bowlers.length > 0 ? bowlers : [
+                    {name: 'Bowler 1', overs: 0, runs: 0, wickets: 0},
+                    {name: 'Bowler 2', overs: 0, runs: 0, wickets: 0}
+                ]
             };
+            
+            console.log('Extracted cricket data:', extractedCricketData);
+            
+            // Show Excel export option
+            document.getElementById('excelSection').classList.remove('hidden');
+            showStatus('Cricket data extracted! Ready to export to Excel.', 'success');
         }
 
-            setTimeout(() => {
-                document.getElementById('previewSection').classList.add('show');
-                
-                const accuracy = extractedData.analysisAccuracy.overallAccuracy;
-                const method = extractedData.analysisAccuracy.ocrMethod;
-                
-                showStatus(`✅ Real scorecard analysis complete! ${accuracy.toFixed(1)}% accuracy using ${method}`, 'success');
-                
-                // Show Excel completion notification with real data
-                setTimeout(() => {
-                    const dataPoints = extractedData.teamABatting.length + extractedData.bowling.length;
-                    showStatus(`📊 Excel report ready! ${dataPoints} data points extracted from actual image`, 'notification');
-                }, 2000);
-            }, 1000);
-        }
-
-        // Video player for premium users
-        function playVideo(player) {
-            if (!isRegistered) {
-                alert('🎬 Please register to access premium highlight videos!');
+        // Export to Excel
+        function exportToExcel() {
+            if (!extractedCricketData) {
+                showStatus('No cricket data to export!', 'error');
                 return;
             }
-
-            const videos = {
-                'wolvaardt': {
-                    title: 'Laura Wolvaardt - Record Breaking Century',
-                    desc: 'SA captain\'s masterclass innings against Australia Women'
-                },
-                'luus': {
-                    title: 'Sune Luus - All-Round Excellence', 
-                    desc: 'Former captain\'s best bowling and batting moments'
-                },
-                'ismail': {
-                    title: 'Shabnim Ismail - Fastest Deliveries',
-                    desc: 'World\'s fastest female bowler in action'
-                },
-                'kapp': {
-                    title: 'Marizanne Kapp - ICC Player Highlights',
-                    desc: 'ICC Player of the Year\'s greatest moments'
-                }
-            };
-
-            const video = videos[player];
-            alert(`🎬 Playing: ${video.title}
-
-${video.desc}
-
-(In production, this would open the actual video player)`);
-        }
-
-        // Excel generation
-        function generateAndSendExcel() {
-            if (!extractedData) {
-                alert('📸 Please take a photo first!');
-                return;
-            }
-
-            showStatus('📊 Generating professional Excel report...', 'processing');
-
+            
+            showStatus('Generating Excel file...', 'processing');
+            
             const wb = XLSX.utils.book_new();
-
-            // Sheet 1: Match Summary - VERY ACCURATE
-            const matchSummary = [
-                ['CRICKETESS MOBILE - ULTRA-ACCURATE PROFESSIONAL MATCH REPORT'],
+            
+            // Sheet 1: Match Summary
+            const matchData = [
+                ['CRICKETESS MOBILE - CRICKET SCORECARD ANALYSIS'],
                 [''],
-                ['MATCH DETAILS'],
-                ['Team A', extractedData.matchInfo.teamA],
-                ['Team B', extractedData.matchInfo.teamB],
-                ['Date', extractedData.matchInfo.date],
-                ['Venue', extractedData.matchInfo.venue],
-                ['Competition', extractedData.matchInfo.competition],
-                ['Result', extractedData.matchInfo.result],
-                ['Toss', extractedData.matchInfo.toss],
-                ['Weather', extractedData.matchInfo.weather],
-                ['Attendance', extractedData.matchInfo.attendance],
+                ['Match Information'],
+                ['Team A', extractedCricketData.matchInfo.teamA],
+                ['Team B', extractedCricketData.matchInfo.teamB],
+                ['Date', extractedCricketData.matchInfo.date],
+                ['Venue', extractedCricketData.matchInfo.venue],
                 [''],
-                ['MATCH OFFICIALS'],
-                ['Umpires', extractedData.matchInfo.umpires],
-                ['Match Referee', extractedData.matchInfo.matchReferee],
-                [''],
-                ['POWERPLAY SCORES'],
-                ['Team A Powerplay', extractedData.powerplayScores.teamA],
-                ['Team B Powerplay', extractedData.powerplayScores.teamB],
-                [''],
-                ['REAL OCR ANALYSIS RESULTS'],
-                ['OCR Method', extractedData.analysisAccuracy.ocrMethod || 'Tesseract OCR'],
-                ['OCR Confidence', extractedData.analysisAccuracy.ocrConfidence.toFixed(1) + '%'],
-                ['Data Validation', extractedData.analysisAccuracy.dataValidation.toFixed(1) + '%'],
-                ['Cross Verification', extractedData.analysisAccuracy.crossVerification.toFixed(1) + '%'],
-                ['Overall Accuracy', extractedData.analysisAccuracy.overallAccuracy.toFixed(1) + '%'],
-                ['Text Length Detected', extractedData.analysisAccuracy.textLength || 0],
-                ['Lines Detected', extractedData.analysisAccuracy.linesDetected || 0],
-                ['Processing Time', 'Real-time OCR'],
-                [''],
-                ['CRICKETESS MOBILE'],
-                ['Generated by', 'Cricketess Mobile AI - Ultra-Accurate Mode'],
-                ['Women\'s Cricket Focus', '100%'],
-                ['User Status', isRegistered ? 'Premium Registered User' : 'Standard User'],
-                ['App Downloads', downloadCount + ' cricket teams served'],
-                ['Generation Time', new Date().toLocaleString()]
+                ['OCR Analysis Results'],
+                ['OCR Confidence', extractedCricketData.matchInfo.ocrConfidence.toFixed(1) + '%'],
+                ['Text Length', extractedCricketData.matchInfo.textLength],
+                ['Lines Detected', extractedCricketData.matchInfo.linesDetected],
+                ['Processing Method', 'Tesseract OCR'],
+                ['Generated', new Date().toLocaleString()],
+                ['Email', document.getElementById('emailInput').value]
             ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(matchSummary), 'Match Summary');
-
-            // Sheet 2: Team A Batting - COMPREHENSIVE
-            const teamAData = [
-                ['TEAM A BATTING - ' + extractedData.matchInfo.teamA + ' - ULTRA-ACCURATE ANALYSIS'],
+            
+            const ws1 = XLSX.utils.aoa_to_sheet(matchData);
+            XLSX.utils.book_append_sheet(wb, ws1, 'Match Summary');
+            
+            // Sheet 2: Batting Statistics
+            const battingData = [
+                ['BATTING STATISTICS'],
                 [''],
-                ['Pos', 'Batsman', 'Runs', 'Balls', 'Fours', 'Sixes', 'Strike Rate', 'Dismissal'],
-                ...extractedData.teamABatting.map(p => [p.position, p.name, p.runs, p.balls, p.fours, p.sixes, p.strikeRate, p.dismissal]),
-                [''],
-                ['TEAM TOTALS'],
-                ['Total Runs', extractedData.teamABatting.reduce((sum, p) => sum + p.runs, 0)],
-                ['Total Balls', extractedData.teamABatting.reduce((sum, p) => sum + p.balls, 0)],
-                ['Total Fours', extractedData.teamABatting.reduce((sum, p) => sum + p.fours, 0)],
-                ['Total Sixes', extractedData.teamABatting.reduce((sum, p) => sum + p.sixes, 0)],
-                ['Team Strike Rate', ((extractedData.teamABatting.reduce((sum, p) => sum + p.runs, 0) / extractedData.teamABatting.reduce((sum, p) => sum + p.balls, 0)) * 100).toFixed(2)],
-                [''],
-                ['PARTNERSHIPS'],
-                ['Wicket', 'Runs', 'Balls', 'Batsmen'],
-                ...extractedData.partnerships.map(p => [p.wicket, p.runs, p.balls, p.batsmen])
+                ['Player', 'Runs', 'Balls', 'Fours', 'Sixes', 'Strike Rate'],
+                ...extractedCricketData.players.map(p => [
+                    p.name, 
+                    p.runs, 
+                    p.balls, 
+                    p.fours, 
+                    p.sixes, 
+                    p.balls > 0 ? ((p.runs / p.balls) * 100).toFixed(2) : 0
+                ])
             ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(teamAData), 'Team A Batting');
-
-            // Sheet 3: Comprehensive Bowling Analysis
+            
+            const ws2 = XLSX.utils.aoa_to_sheet(battingData);
+            XLSX.utils.book_append_sheet(wb, ws2, 'Batting Stats');
+            
+            // Sheet 3: Bowling Statistics
             const bowlingData = [
-                ['BOWLING ANALYSIS - ULTRA-ACCURATE DATA'],
+                ['BOWLING STATISTICS'],
                 [''],
-                ['Bowler', 'Overs', 'Maidens', 'Runs', 'Wickets', 'Economy', 'Dots', 'Wides', 'No Balls'],
-                ...extractedData.bowling.map(b => [b.bowler, b.overs, b.maidens, b.runs, b.wickets, b.economy, b.dots, b.wides, b.noBalls]),
-                [''],
-                ['BOWLING TOTALS'],
-                ['Total Overs', extractedData.bowling.reduce((sum, b) => sum + b.overs, 0)],
-                ['Total Runs', extractedData.bowling.reduce((sum, b) => sum + b.runs, 0)],
-                ['Total Wickets', extractedData.bowling.reduce((sum, b) => sum + b.wickets, 0)],
-                ['Total Dots', extractedData.bowling.reduce((sum, b) => sum + b.dots, 0)],
-                [''],
-                ['EXTRAS BREAKDOWN'],
-                ['Byes', extractedData.extras.byes],
-                ['Leg Byes', extractedData.extras.legByes],
-                ['Wides', extractedData.extras.wides],
-                ['No Balls', extractedData.extras.noBalls],
-                ['Penalties', extractedData.extras.penalties],
-                ['Total Extras', extractedData.extras.total],
-                [''],
-                ['FALL OF WICKETS'],
-                ...extractedData.fallOfWickets.map(fow => ['', fow])
+                ['Bowler', 'Overs', 'Runs', 'Wickets', 'Economy'],
+                ...extractedCricketData.bowlers.map(b => [
+                    b.name, 
+                    b.overs, 
+                    b.runs, 
+                    b.wickets, 
+                    b.overs > 0 ? (b.runs / b.overs).toFixed(2) : 0
+                ])
             ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bowlingData), 'Bowling Analysis');
-
-            // Sheet 4: Women's Cricket Celebration - DETAILED STATS
-            const womensCricketData = [
-                ['WOMEN\'S CRICKET CELEBRATION - DETAILED PLAYER STATISTICS'],
+            
+            const ws3 = XLSX.utils.aoa_to_sheet(bowlingData);
+            XLSX.utils.book_append_sheet(wb, ws3, 'Bowling Stats');
+            
+            // Sheet 4: Raw OCR Data
+            const ocrData = [
+                ['RAW OCR TEXT DATA'],
                 [''],
-                ['FIRST IT\'S FOR YOUTH - SA Cricket Legends with Complete Stats'],
+                ['Confidence Level', (ocrResult.confidence || 0).toFixed(1) + '%'],
+                ['Processing Time', new Date().toLocaleString()],
                 [''],
-                ['LAURA WOLVAARDT - SA CAPTAIN'],
-                ['Role', 'Right-hand Batter, Occasional Right-arm Medium'],
-                ['ODI Runs', '3,247'],
-                ['ODI Average', '42.96'],
-                ['ODI Centuries', '8'],
-                ['ODI Fifties', '16'],
-                ['T20I Runs', '2,156'],
-                ['T20I Average', '28.75'],
-                ['T20I Fifties', '8'],
-                ['Achievement', 'Youngest SA captain at 24, World Cup record holder'],
-                [''],
-                ['SUNE LUUS - FORMER SA CAPTAIN'],
-                ['Role', 'Right-hand Batter, Right-arm Off-spin All-rounder'],
-                ['ODI Runs', '2,934'],
-                ['ODI Average', '36.67'],
-                ['ODI Wickets', '89'],
-                ['ODI Bowling Average', '24.12'],
-                ['T20I Runs', '1,567'],
-                ['T20I Wickets', '45'],
-                ['Achievement', 'Former captain, Led SA to World Cup finals'],
-                [''],
-                ['SHABNIM ISMAIL - PREMIUM STATS (Register to view)'],
-                ['Role', 'Right-arm Fast Bowler'],
-                ['Status', isRegistered ? 'Premium stats available' : 'Register for detailed stats'],
-                [''],
-                ['MARIZANNE KAPP - PREMIUM STATS (Register to view)'],
-                ['Role', 'Right-hand Batter, Right-arm Medium All-rounder'],
-                ['Status', isRegistered ? 'Premium stats available' : 'Register for detailed stats'],
-                [''],
-                ['YOUTH DEVELOPMENT IMPACT'],
-                ['Mission', 'FIRST IT\'S FOR YOUTH'],
-                ['Focus', 'Inspiring next generation through cricket legends'],
-                ['Educational Value', 'Learning from the best SA women cricketers'],
-                ['Technology Access', 'Making professional analysis available to youth cricket']
+                ['Extracted Text'],
+                [ocrResult.text || 'No text detected']
             ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(womensCricketData), 'Women\'s Cricket');
-
-            // Sheet 5: App Usage Statistics
-            const statsData = [
-                ['CRICKETESS MOBILE - USAGE STATISTICS'],
-                [''],
-                ['Total Downloads', downloadCount],
-                ['User Registration', isRegistered ? 'Yes' : 'No'],
-                ['Premium Features', isRegistered ? 'Unlocked' : 'Standard'],
-                ['Processing Date', new Date().toLocaleString()],
-                ['App Version', 'Final v1.0'],
-                [''],
-                ['Features Used'],
-                ['Camera Capture', 'Yes'],
-                ['AI Analysis', 'Yes'],
-                ['Excel Generation', 'Yes'],
-                ['Cricket History', isRegistered ? 'Premium' : 'Standard'],
-                ['Highlight Videos', isRegistered ? 'Accessed' : 'Not Available']
-            ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(statsData), 'App Statistics');
-
-            // Sheet 6: Cricket Development Impact
-            const impactData = [
-                ['CRICKET DEVELOPMENT IMPACT'],
-                [''],
-                ['Mission', 'FIRST IT\'S FOR YOUTH'],
-                ['Focus', 'Women\'s Cricket Development'],
-                ['Target', 'Youth & Club Cricket'],
-                [''],
-                ['Impact Areas'],
-                ['Digital Scorekeeping', 'Modernizing cricket records'],
-                ['Women\'s Cricket Promotion', 'Celebrating female cricketers'],
-                ['Youth Development', 'Inspiring next generation'],
-                ['Technology Access', 'Making AI accessible to clubs'],
-                ['Education', 'Cricket history during processing'],
-                [''],
-                ['Supported By'],
-                ['User Donations', 'Community funding'],
-                ['Premium Registrations', 'Feature development'],
-                ['Cricket Community', 'Grassroots support']
-            ];
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(impactData), 'Development Impact');
-
-            const fileName = `Cricketess_Professional_${extractedData.matchInfo.teamA.replace(/\s+/g, '')}_vs_${extractedData.matchInfo.teamB.replace(/\s+/g, '')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
             
-            setTimeout(() => deliverExcelFile(wb, fileName), 2000);
-        }
-
-        function deliverExcelFile(workbook, fileName) {
-            const userEmail = document.getElementById('userEmail').value.trim();
+            const ws4 = XLSX.utils.aoa_to_sheet(ocrData);
+            XLSX.utils.book_append_sheet(wb, ws4, 'OCR Data');
             
-            // Save email and track usage
-            localStorage.setItem('cricketessUserEmail', userEmail);
+            // Generate filename
+            const fileName = `Cricketess_${extractedCricketData.matchInfo.teamA.replace(/\s+/g, '')}_vs_${extractedCricketData.matchInfo.teamB.replace(/\s+/g, '')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
             
-            if (selectedEmailMethod === 'download') {
-                XLSX.writeFile(workbook, fileName);
-                showStatus('📱 Professional Excel report downloaded! Check Downloads folder.', 'success');
-                
-                setTimeout(() => {
-                    if (confirm('📊 Excel downloaded successfully! Share via email now?')) {
-                        shareDownloadedFile(fileName, userEmail);
-                    }
-                }, 2000);
-                
-            } else if (selectedEmailMethod === 'drive') {
-                const excelBlob = XLSX.write(workbook, {bookType: 'xlsx', type: 'blob'});
-                const url = URL.createObjectURL(excelBlob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = fileName;
-                
-                setTimeout(() => {
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    URL.revokeObjectURL(url);
-                    
-                    showStatus('☁️ Excel ready for Google Drive upload!', 'success');
-                    
-                    setTimeout(() => {
-                        alert(`📊 GOOGLE DRIVE UPLOAD:
-
-✅ Excel file "${fileName}" downloaded
-📱 Opening Google Drive...
-📤 Upload the file and share with your team!`);
-                        
-                        window.open('https://drive.google.com', '_blank');
-                    }, 1000);
-                }, 1500);
-                
-            } else {
-                const excelBlob = XLSX.write(workbook, {bookType: 'xlsx', type: 'blob'});
-                const url = URL.createObjectURL(excelBlob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = fileName;
-                
-                setTimeout(() => {
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    
-                    const subject = encodeURIComponent('🏏 Cricketess Mobile - Professional Cricket Report');
-                    const body = encodeURIComponent(`Professional cricket scorecard analysis by Cricketess Mobile! 🏏
-
-📊 MATCH DETAILS:
-• Teams: ${extractedData.matchInfo.teamA} vs ${extractedData.matchInfo.teamB}
-• Date: ${extractedData.matchInfo.date}
-• Venue: ${extractedData.matchInfo.venue}
-• Result: ${extractedData.matchInfo.result}
-
-📈 PROFESSIONAL EXCEL REPORT:
-The Excel file "${fileName}" contains 6 comprehensive sheets:
-✅ Match Summary
-✅ Team Batting Statistics
-✅ Bowling Analysis
-✅ Women's Cricket Celebration
-✅ App Usage Statistics
-✅ Cricket Development Impact
-
-🤖 AI PROCESSING:
-• OCR Accuracy: 96.4%
-• Processing Time: 3.1 seconds
-• User Status: ${isRegistered ? 'Premium Registered User' : 'Standard User'}
-• Downloads Tracked: ${downloadCount}
-
-👩 WOMEN'S CRICKET CELEBRATED:
-• Laura Wolvaardt - SA Captain & Record Holder
-• Sune Luus - Former Captain & All-rounder
-• Shabnim Ismail - World's Fastest Bowler
-• Marizanne Kapp - ICC Player of the Year
-
-FIRST IT'S FOR YOUTH - Supporting cricket development! 🌟
-
-📎 ATTACHMENT INSTRUCTIONS:
-1. Excel file downloaded to your phone
-2. Attach "${fileName}" to this email
-3. Send to share with your cricket team
-
-Thanks for using Cricketess Mobile - The complete cricket solution!
-
-Best regards,
-Cricketess Development Team`);
-
-                    const mailtoUrl = selectedEmailMethod === 'gmail' 
-                        ? `https://mail.google.com/mail/?view=cm&to=${userEmail}&subject=${subject}&body=${body}`
-                        : `mailto:${userEmail}?subject=${subject}&body=${body}`;
-                    
-                    setTimeout(() => {
-                        window.open(mailtoUrl, '_blank');
-                        showStatus('📧 Email opened with professional report! Attach the Excel file.', 'success');
-                        
-                        setTimeout(() => {
-                            alert(`📎 EXCEL ATTACHMENT READY!
-
-✅ Professional Excel report downloaded
-📧 Email app opened with complete message
-📊 6 comprehensive sheets included
-🏏 Cricket development impact documented
-
-TO COMPLETE:
-1. Attach the Excel file: ${fileName}
-2. Send email to share with your team
-3. Excel file is in Downloads folder`);
-                        }, 2000);
-                    }, 1000);
-                    
-                    URL.revokeObjectURL(url);
-                }, 1500);
-            }
-        }
-
-        function shareDownloadedFile(fileName, userEmail) {
-            const subject = encodeURIComponent('🏏 Professional Cricket Scorecard Report');
-            const body = encodeURIComponent(`Professional cricket analysis by Cricketess Mobile!
-
-📊 Excel file: ${fileName}
-🤖 96.4% OCR accuracy
-👩 Women's cricket celebration
-🎯 Youth development focus
-📈 ${downloadCount} total app downloads
-
-FIRST IT'S FOR YOUTH - Complete cricket solution! 🌟`);
-
-            window.open(`mailto:${userEmail}?subject=${subject}&body=${body}`, '_blank');
-            alert(`📎 Email opened! Attach: ${fileName}`);
-        }
-
-        // WhatsApp sharing
-        function shareToWhatsApp() {
-            if (!extractedData) {
-                alert('📸 Please take a photo first!');
-                return;
-            }
-
-            const message = `🏏 *Professional Cricket Analysis Complete!*
-
-📊 *Match:* ${extractedData.matchInfo.teamA} vs ${extractedData.matchInfo.teamB}
-🏆 *Result:* ${extractedData.matchInfo.result}
-
-🤖 *AI Analysis:* 96.4% accuracy, 3.1s processing
-📊 *Excel Report:* 6 professional sheets generated
-👩 *Women's Cricket:* Laura Wolvaardt, Sune Luus, Shabnim Ismail, Marizanne Kapp
-📈 *App Downloads:* ${downloadCount} cricket teams served
-
-*FIRST IT'S FOR YOUTH* - Complete cricket solution! 🌟
-
-Get the app: ${window.location.href}`;
-
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        function shareAppToWhatsApp() {
-            const message = `🏏 *Cricketess Mobile - Complete Cricket Solution*
-
-📸 Take photo → 🤖 AI analyzes → 📊 Professional Excel
-✅ 96.4% accuracy ✅ Field tested ✅ Premium features
-
-🎯 *Complete Features:*
-• Real Excel generation (6 sheets)
-• Cricket history during analysis
-• Premium highlight videos
-• Download tracking
-• Donation support
-
-👩 *Celebrating SA Women's Cricket:*
-Laura Wolvaardt • Sune Luus • Shabnim Ismail • Marizanne Kapp
-
-*FIRST IT'S FOR YOUTH* - Supporting cricket development! 🌟
-
-📈 ${downloadCount} teams already using it!
-
-Try it: ${window.location.href}`;
-
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        function copyAppLink() {
-            const appUrl = window.location.href;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(appUrl).then(() => {
-                    showStatus('🔗 App link copied! Share with cricket teams.', 'success');
-                });
-            } else {
-                showStatus('🔗 Copy this link: ' + appUrl, 'success');
-            }
-        }
-
-        function shareViaSMS() {
-            const message = `🏏 Cricketess Mobile - Complete Cricket Solution
-📸→🤖→📊 Professional Excel reports
-96.4% accuracy • Premium features • ${downloadCount} downloads
-👩 Celebrating SA Women's Cricket!
-FIRST IT'S FOR YOUTH 🌟
-Try: ${window.location.href}`;
-            window.location.href = `sms:?body=${encodeURIComponent(message)}`;
-        }
-
-        function shareViaEmail() {
-            const subject = encodeURIComponent('🏏 Cricketess Mobile - Complete Cricket Solution');
-            const body = encodeURIComponent(`Check out this complete cricket app:
-
-🏏 CRICKETESS MOBILE - FINAL VERSION
-
-📸 Take photo → 🤖 AI analyzes → 📊 Professional Excel
-✅ 96.4% accuracy ✅ Field tested ✅ Premium features
-
-🎯 COMPLETE FEATURES:
-• Real Excel generation (6 comprehensive sheets)
-• Cricket history during analysis
-• Premium highlight videos for registered users
-• Download tracking and statistics
-• Donation support for cricket development
-
-👩 CELEBRATING SA WOMEN'S CRICKET:
-• Laura Wolvaardt - Captain & Record Holder
-• Sune Luus - Former Captain & All-rounder
-• Shabnim Ismail - World's Fastest Bowler
-• Marizanne Kapp - ICC Player of the Year
-
-FIRST IT'S FOR YOUTH - Supporting cricket development! 🌟
-
-📈 ${downloadCount} cricket teams already using it!
-
-Try it: ${window.location.href}`);
-
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        // Player stats functions
-        function togglePlayerStats(player) {
-            const statsDiv = document.getElementById(player + '-stats');
-            const isVisible = statsDiv.classList.contains('show');
+            // Download the file
+            XLSX.writeFile(wb, fileName);
             
-            // Hide all other stats first
-            document.querySelectorAll('.player-stats').forEach(div => {
-                div.classList.remove('show');
-            });
+            showStatus(`Excel file "${fileName}" downloaded successfully!`, 'success');
             
-            // Toggle current stats
-            if (!isVisible) {
-                statsDiv.classList.add('show');
-                statsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-
-        function hidePlayerStats(player) {
-            document.getElementById(player + '-stats').classList.remove('show');
-        }
-
-        function showRegisterPrompt() {
-            alert('🎯 Register for Premium Features!\n\n📊 Unlock detailed stats for:\n• Shabnim Ismail - World\'s fastest bowler\n• Marizanne Kapp - ICC Player of the Year\n• Plus exclusive highlight videos!\n\nScroll down to register now! 🚀');
-            
-            // Scroll to registration section
-            document.getElementById('registrationSection').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
-        }
-
-        // Enhanced Excel generation with real email confirmation
-        function deliverExcelFile(workbook, fileName) {
-            const userEmail = document.getElementById('userEmail').value.trim();
-            
-            // Save email and track usage
-            localStorage.setItem('cricketessUserEmail', userEmail);
-            
-            if (selectedEmailMethod === 'download') {
-                XLSX.writeFile(workbook, fileName);
-                showStatus('📱 Professional Excel report downloaded! Check Downloads folder.', 'success');
-                
-                setTimeout(() => {
-                    if (confirm('📊 Excel downloaded successfully! Share via email now?')) {
-                        shareDownloadedFile(fileName, userEmail);
-                    }
-                }, 2000);
-                
-            } else if (selectedEmailMethod === 'drive') {
-                const excelBlob = XLSX.write(workbook, {bookType: 'xlsx', type: 'blob'});
-                const url = URL.createObjectURL(excelBlob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = fileName;
-                
-                setTimeout(() => {
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    URL.revokeObjectURL(url);
-                    
-                    showStatus('☁️ Excel ready for Google Drive upload!', 'success');
-                    
-                    setTimeout(() => {
-                        alert(`📊 GOOGLE DRIVE UPLOAD:
-
-✅ Excel file "${fileName}" downloaded to your phone
-📱 Google Drive will open now
-📤 Upload the file and share with your team!
-
-The Excel contains very accurate cricket analysis with 96.4% OCR precision!`);
-                        
-                        window.open('https://drive.google.com', '_blank');
-                        confirmEmailDelivery(userEmail, fileName, 'Google Drive');
-                    }, 1000);
-                }, 1500);
-                
-            } else {
-                // Gmail/Email with real Excel attachment and confirmation
-                const excelBlob = XLSX.write(workbook, {bookType: 'xlsx', type: 'blob'});
-                const url = URL.createObjectURL(excelBlob);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = fileName;
-                
-                setTimeout(() => {
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    
-                    showStatus('📧 Creating professional email with Excel attachment...', 'processing');
-                    
-                    // Enhanced email content with very accurate analysis
-                    const subject = encodeURIComponent('🏏 Cricketess Mobile - VERY ACCURATE Cricket Analysis Report');
-                    const body = encodeURIComponent(`PROFESSIONAL CRICKET SCORECARD ANALYSIS - VERY HIGH ACCURACY
-
-Your cricket scorecard has been processed with MAXIMUM PRECISION by Cricketess Mobile! 🏏
-
-📊 MATCH ANALYSIS RESULTS:
-• Teams: ${extractedData.matchInfo.teamA} vs ${extractedData.matchInfo.teamB}
-• Date: ${extractedData.matchInfo.date}
-• Venue: ${extractedData.matchInfo.venue}
-• Result: ${extractedData.matchInfo.result}
-
-🤖 ULTRA-ACCURATE AI PROCESSING:
-• OCR Accuracy: 96.4% (Industry Leading)
-• Processing Time: 3.1 seconds
-• Data Validation: Triple-checked
-• Analysis Quality: Cricket Board Professional Grade
-• User Status: ${isRegistered ? 'Premium Registered User' : 'Standard User'}
-• App Downloads: ${downloadCount} cricket teams served
-
-📈 PROFESSIONAL EXCEL REPORT ATTACHED:
-The Excel file "${fileName}" contains 6 comprehensive sheets with VERY ACCURATE data:
-✅ Match Summary - Complete match details
-✅ Team A Batting - Individual player statistics with precise strike rates
-✅ Bowling Analysis - Accurate bowling figures and economy rates
-✅ Women's Cricket Celebration - SA legends featured
-✅ App Usage Statistics - Download tracking and user data
-✅ Cricket Development Impact - Community support metrics
-
-👩 CELEBRATING SA WOMEN'S CRICKET LEGENDS:
-🏏 Laura Wolvaardt - SA Captain & World Record Holder
-   • ODI Runs: 3,247 • Average: 42.96 • Centuries: 8
-👑 Sune Luus - Former Captain & All-rounder
-   • ODI Runs: 2,934 • Wickets: 89 • Bowling Avg: 24.12
-⚡ Shabnim Ismail - World's Fastest Female Bowler
-🎯 Marizanne Kapp - ICC Player of the Year
-
-FIRST IT'S FOR YOUTH - Supporting cricket development worldwide! 🌟
-
-📎 EXCEL ATTACHMENT INSTRUCTIONS:
-1. ✅ Excel file "${fileName}" downloaded to your phone
-2. 📧 This email is pre-written with all details
-3. 📎 Attach the Excel file using the paperclip/attachment icon
-4. 📤 Send email to share with your cricket team
-5. 💾 Excel file location: Downloads folder
-
-🔍 DATA ACCURACY GUARANTEE:
-Our AI uses 16 different extraction methods to ensure maximum accuracy:
-• Advanced OCR with 96.4% precision
-• Multiple validation algorithms
-• Cricket-specific data recognition
-• Professional formatting for cricket boards
-• Real-time error correction
-
-📧 EMAIL DELIVERY CONFIRMATION:
-This email will be sent to: ${userEmail}
-Please confirm receipt and attachment success.
-
-Thanks for using Cricketess Mobile - The most accurate cricket scorecard digitization solution!
-
-Best regards,
-Cricketess Development Team
-Professional Cricket Technology Solutions
-
----
-Processed: ${new Date().toLocaleString()}
-Device: Mobile Web Application
-Analysis: Ultra-High Accuracy Mode
-Downloads: ${downloadCount} cricket teams served worldwide`);
-
-                    const mailtoUrl = selectedEmailMethod === 'gmail' 
-                        ? `https://mail.google.com/mail/?view=cm&to=${userEmail}&subject=${subject}&body=${body}`
-                        : `mailto:${userEmail}?subject=${subject}&body=${body}`;
-                    
-                    setTimeout(() => {
-                        window.open(mailtoUrl, '_blank');
-                        showStatus('📧 Professional email opened with VERY ACCURATE analysis!', 'success');
-                        
-                        setTimeout(() => {
-                            alert(`📎 PROFESSIONAL EXCEL ATTACHMENT READY!
-
-✅ VERY ACCURATE Excel report downloaded
-📧 Professional email opened with complete analysis
-📊 96.4% OCR accuracy guaranteed
-🏏 Cricket board professional grade
-
-ATTACHMENT STEPS:
-1. 📎 Tap attachment/paperclip icon in email app
-2. 📁 Browse to Downloads folder
-3. 📊 Select file: ${fileName}
-4. 📤 Send email with Excel attachment
-5. ✅ Confirm delivery to: ${userEmail}
-
-The Excel contains the most accurate cricket analysis available!`);
-                            
-                            // Confirm email delivery
-                            confirmEmailDelivery(userEmail, fileName, 'Email');
-                        }, 2000);
-                    }, 1000);
-                    
-                    URL.revokeObjectURL(url);
-                }, 1500);
-            }
-        }
-
-        function confirmEmailDelivery(email, fileName, method) {
+            // Offer to email the file
             setTimeout(() => {
-                const confirmed = confirm(`📧 EMAIL DELIVERY CONFIRMATION
-
-📤 Method: ${method}
-📧 Email: ${email}
-📊 File: ${fileName}
-
-Did you successfully receive/send the Excel report?
-
-✅ Click OK if email was sent successfully
-❌ Click Cancel if there were issues`);
-
-                if (confirmed) {
-                    showStatus(`✅ Email delivery confirmed to ${email}! Excel report sent successfully.`, 'success');
-                    
-                    // Track successful delivery
-                    const deliveries = parseInt(localStorage.getItem('cricketessDeliveries') || '0') + 1;
-                    localStorage.setItem('cricketessDeliveries', deliveries.toString());
-                    
-                    setTimeout(() => {
-                        alert(`🎉 SUCCESS CONFIRMED!
-
-📧 Email delivered to: ${email}
-📊 Excel report: ${fileName}
-🏏 Very accurate cricket analysis sent
-📈 Total successful deliveries: ${deliveries}
-
-Thank you for using Cricketess Mobile!
-The most accurate cricket scorecard solution. 🌟`);
-                    }, 1500);
-                } else {
-                    showStatus('⚠️ Email delivery issue reported. Please try again or contact support.', 'processing');
-                    
-                    setTimeout(() => {
-                        if (confirm('📧 Email Delivery Support\n\nWould you like to try sending again with a different method?')) {
-                            // Offer alternative delivery method
-                            alert('📱 Alternative Options:\n\n1. Try Direct Download method\n2. Use Google Drive upload\n3. Check your email app settings\n4. Verify email address is correct');
-                        }
-                    }, 1000);
+                if (confirm('Excel file downloaded! Would you like to email it?')) {
+                    emailExcelFile(fileName);
                 }
-            }, 3000);
+            }, 2000);
         }
 
-        // Test camera functionality
-        function testCameraButtons() {
-            console.log('Testing camera buttons...');
+        // Email Excel file
+        function emailExcelFile(fileName) {
+            const email = document.getElementById('emailInput').value;
+            const subject = encodeURIComponent('Cricket Scorecard Analysis - ' + fileName);
+            const body = encodeURIComponent(`Cricket scorecard analysis completed!
+
+Match: ${extractedCricketData.matchInfo.teamA} vs ${extractedCricketData.matchInfo.teamB}
+Date: ${extractedCricketData.matchInfo.date}
+OCR Confidence: ${extractedCricketData.matchInfo.ocrConfidence.toFixed(1)}%
+
+The Excel file "${fileName}" has been generated with:
+- Match summary
+- Batting statistics  
+- Bowling statistics
+- Raw OCR data
+
+Please attach the downloaded Excel file to this email.
+
+Generated by Cricketess Mobile - Real Cricket OCR Analysis`);
+
+            const mailtoUrl = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.open(mailtoUrl, '_blank');
             
-            const cameraBtn = document.querySelector('button[onclick="openCamera()"]');
-            const uploadBtn = document.querySelector('button[onclick="uploadFromPhone()"]');
-            const emailInput = document.getElementById('userEmail');
-            const cameraInput = document.getElementById('cameraInput');
-            const uploadInput = document.getElementById('uploadInput');
-            
-            console.log('Camera button:', cameraBtn);
-            console.log('Upload button:', uploadBtn);
-            console.log('Email input:', emailInput);
-            console.log('Camera input:', cameraInput);
-            console.log('Upload input:', uploadInput);
-            
-            if (!cameraBtn || !uploadBtn) {
-                console.error('Camera buttons not found!');
-                return false;
-            }
-            
-            if (!emailInput) {
-                console.error('Email input not found!');
-                return false;
-            }
-            
-            if (!cameraInput || !uploadInput) {
-                console.error('File inputs not found!');
-                return false;
-            }
-            
-            console.log('All camera elements found successfully!');
-            return true;
+            showStatus('Email client opened! Please attach the Excel file.', 'success');
         }
 
-        // Auto-save email when typing
-        document.getElementById('userEmail').addEventListener('input', function() {
-            const email = this.value.trim();
-            if (email && email.includes('@')) {
-                localStorage.setItem('cricketessUserEmail', email);
+        // Show status message
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusDiv');
+            statusDiv.innerHTML = `<div class="status status-${type}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 5000);
             }
-        });
+        }
 
-        // Debug camera issue function
-        function debugCameraIssue() {
-            let debugInfo = '🔧 CAMERA DEBUG INFORMATION:\n\n';
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Cricketess Mobile initialized');
             
-            // Test email validation
-            const email = document.getElementById('userEmail').value.trim();
-            debugInfo += `📧 Email: "${email}"\n`;
-            debugInfo += `📧 Email Valid: ${isValidEmail(email)}\n\n`;
+            // Load saved email
+            const savedEmail = localStorage.getItem('cricketessEmail');
+            if (savedEmail) {
+                document.getElementById('emailInput').value = savedEmail;
+            }
             
-            // Test button elements
-            const cameraBtn = document.querySelector('button[onclick="openCamera()"]');
-            const uploadBtn = document.querySelector('button[onclick="uploadFromPhone()"]');
-            debugInfo += `📸 Camera Button Found: ${!!cameraBtn}\n`;
-            debugInfo += `📱 Upload Button Found: ${!!uploadBtn}\n\n`;
-            
-            // Test file inputs
-            const cameraInput = document.getElementById('cameraInput');
-            const uploadInput = document.getElementById('uploadInput');
-            debugInfo += `📸 Camera Input Found: ${!!cameraInput}\n`;
-            debugInfo += `📱 Upload Input Found: ${!!uploadInput}\n\n`;
-            
-            // Test if functions exist
-            debugInfo += `🔧 openCamera Function: ${typeof openCamera}\n`;
-            debugInfo += `🔧 uploadFromPhone Function: ${typeof uploadFromPhone}\n`;
-            debugInfo += `🔧 handleImageCapture Function: ${typeof handleImageCapture}\n\n`;
-            
-            // Browser capabilities
-            debugInfo += `🌐 Browser: ${navigator.userAgent.split(' ').pop()}\n`;
-            debugInfo += `📱 Mobile Device: ${/Mobi|Android/i.test(navigator.userAgent)}\n`;
-            debugInfo += `📸 Camera Support: ${!!navigator.mediaDevices}\n\n`;
-            
-            debugInfo += 'MANUAL TEST:\n';
-            debugInfo += '1. Enter valid email above\n';
-            debugInfo += '2. Try camera/upload buttons\n';
-            debugInfo += '3. Check browser console for errors\n\n';
-            
-            debugInfo += 'If still not working:\n';
-            debugInfo += '• Refresh the page\n';
-            debugInfo += '• Try different browser\n';
-            debugInfo += '• Check browser permissions';
-            
-            alert(debugInfo);
-            
-            // Also log to console
-            console.log('Camera Debug Info:', {
-                email: email,
-                emailValid: isValidEmail(email),
-                cameraBtn: !!cameraBtn,
-                uploadBtn: !!uploadBtn,
-                cameraInput: !!cameraInput,
-                uploadInput: !!uploadInput,
-                functions: {
-                    openCamera: typeof openCamera,
-                    uploadFromPhone: typeof uploadFromPhone,
-                    handleImageCapture: typeof handleImageCapture
-                }
+            // Save email on input
+            document.getElementById('emailInput').addEventListener('input', function() {
+                localStorage.setItem('cricketessEmail', this.value);
             });
-        }
-
-        // Simple test function that should always work
-        function simpleTest() {
-            console.log('Simple test started');
-            
-            // Set email if empty
-            const emailInput = document.getElementById('userEmail');
-            if (!emailInput.value.trim()) {
-                emailInput.value = 'test@cricketess.com';
-            }
-            
-            // Create and trigger file input
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.style.display = 'none';
-            
-            input.onchange = function(e) {
-                console.log('File selected via simple test');
-                handleImageCapture(e);
-            };
-            
-            document.body.appendChild(input);
-            input.click();
-            document.body.removeChild(input);
-            
-            alert('📸 File selector opened! Choose an image to test OCR analysis.');
-        }
-
-        // Force file select (alternative method)
-        function forceFileSelect() {
-            console.log('Force file select');
-            
-            if (!document.getElementById('userEmail').value.trim()) {
-                document.getElementById('userEmail').value = 'test@example.com';
-            }
-            
-            // Try multiple methods
-            try {
-                document.getElementById('cameraInput').click();
-            } catch (e) {
-                try {
-                    document.getElementById('uploadInput').click();
-                } catch (e2) {
-                    // Create new input as last resort
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = handleImageCapture;
-                    input.click();
-                }
-            }
-        }
-
-        // Test camera functionality on page load
-        setTimeout(() => {
-            const result = testCameraButtons();
-            if (!result) {
-                console.error('Camera functionality test failed!');
-            }
-        }, 1000);
+        });
     </script>
 </body>
 </html>
