@@ -1056,20 +1056,6 @@ ${correctedResult.confidence > 85 ? '✅ EXCELLENT ACCURACY!' :
                 return { text: '', confidence: 0, method: 'Cricket OCR Failed' };
             }
         }
-                text = text.replace(/\bover[s]?\b/gi, 'overs');
-                text = text.replace(/\brun[s]?\b/gi, 'runs');
-                text = text.replace(/\bball[s]?\b/gi, 'balls');
-                text = text.replace(/\bwicket[s]?\b/gi, 'wickets');
-                
-                return {
-                    text: text,
-                    confidence: result.data.confidence + 10, // Boost confidence for corrections
-                    method: 'Cricket-Specific OCR'
-                };
-            } catch (error) {
-                return { text: '', confidence: 0, method: 'Cricket OCR Failed' };
-            }
-        }
 
         // ULTRA-ADVANCED OCR result fusion with intelligent conflict resolution
         async function combineOCRResults(results) {
